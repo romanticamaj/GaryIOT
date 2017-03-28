@@ -10,6 +10,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
     private PowerSwitchFragment mPowerSwitchFragment = null;
+    private PirCameraFragment mPirCameraFragment = null;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -26,6 +27,12 @@ public class MainActivity extends AppCompatActivity {
 
                     return true;
                 case R.id.navigation_pir_camera:
+                    if (null == mPirCameraFragment) {
+                        mPirCameraFragment = PirCameraFragment.newInstance();
+                    }
+
+                    replaceFragment(mPirCameraFragment);
+
                     return true;
             }
             return false;
