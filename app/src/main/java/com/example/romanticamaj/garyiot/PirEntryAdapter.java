@@ -32,7 +32,6 @@ public class PirEntryAdapter extends FirebaseRecyclerAdapter<PirEntry, PirEntryA
      * ViewHolder for each pir entry
      */
     public static class PirEntryViewHolder extends RecyclerView.ViewHolder {
-
         public final ImageView image;
         public final TextView time;
         public final TextView metadata;
@@ -40,7 +39,7 @@ public class PirEntryAdapter extends FirebaseRecyclerAdapter<PirEntry, PirEntryA
         public PirEntryViewHolder(View itemView) {
             super(itemView);
 
-            this.image = (ImageView) itemView.findViewById(R.id.snapshot);
+            this.image = (ImageView) itemView.findViewById(R.id.imageview_snapshot);
             this.time = (TextView) itemView.findViewById(R.id.textView_time);
             this.metadata = (TextView) itemView.findViewById(R.id.textView_metadata);
         }
@@ -58,8 +57,6 @@ public class PirEntryAdapter extends FirebaseRecyclerAdapter<PirEntry, PirEntryA
 
     @Override
     protected void populateViewHolder(PirEntryViewHolder viewHolder, PirEntry model, int position) {
-
-        // Display the timestamp
         if (model.getTimestamp() != null) {
             CharSequence prettyTime = DateUtils.getRelativeDateTimeString(mApplicationContext,
                     model.getTimestamp(), DateUtils.SECOND_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0);
@@ -99,11 +96,10 @@ public class PirEntryAdapter extends FirebaseRecyclerAdapter<PirEntry, PirEntryA
                     });
         }
 
-        // Display the metadata
         if (model.getAnnotations() != null) {
             ArrayList<String> keywords = new ArrayList<>(model.getAnnotations().keySet());
-
             int limit = Math.min(keywords.size(), 3);
+
             viewHolder.metadata.setText(TextUtils.join("\n", keywords.subList(0, limit)));
         } else {
             viewHolder.metadata.setText("no annotations yet");

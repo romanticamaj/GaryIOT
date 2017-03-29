@@ -19,9 +19,10 @@ import com.kyleduo.switchbutton.SwitchButton;
 
 public class PowerSwitchFragment extends Fragment implements IotDiscovery.IotDiscoveryListener {
     private static String TAG = PowerSwitchFragment.class.getName();
+    private static int SWITCH_NUMBER = 8;
 
     private View mMainView;
-    private SwitchButton mPowerSwitch;
+    private SwitchButton[] mPowerSwitchArray;
     private FloatingActionButton mConnectFab;
 
     private IotDiscovery mDiscovery;
@@ -39,6 +40,7 @@ public class PowerSwitchFragment extends Fragment implements IotDiscovery.IotDis
         };
 
         mConnection = new IotConnection(mMessageHandler);
+        mPowerSwitchArray = new SwitchButton[SWITCH_NUMBER];
     }
 
     public static PowerSwitchFragment newInstance() {
@@ -56,6 +58,7 @@ public class PowerSwitchFragment extends Fragment implements IotDiscovery.IotDis
         if (null != mMainView) {
             return mMainView;
         }
+
         mMainView = inflater.inflate(R.layout.fragment_power_switch, container, false);
 
         if (null == mConnectFab) {
@@ -79,19 +82,7 @@ public class PowerSwitchFragment extends Fragment implements IotDiscovery.IotDis
             });
         }
 
-        if (null == mPowerSwitch) {
-            mPowerSwitch = (SwitchButton) mMainView.findViewById(R.id.power_switch);
-            mPowerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked == true) {
-                        mConnection.sendMessage("light on");
-                    } else {
-                        mConnection.sendMessage("light off");
-                    }
-                }
-            });
-            mPowerSwitch.setEnabled(false);
-        }
+        initPowerSwitch();
 
         return mMainView;
     }
@@ -119,7 +110,7 @@ public class PowerSwitchFragment extends Fragment implements IotDiscovery.IotDis
             public void run() {
                 Snackbar.make(getView(), "Connected to a power switch", Snackbar.LENGTH_LONG)
                         .show();
-                mPowerSwitch.setEnabled(true);
+                setSwitchViewEnabled(true);
                 mConnectFab.setEnabled(true);
             }
         });
@@ -143,9 +134,52 @@ public class PowerSwitchFragment extends Fragment implements IotDiscovery.IotDis
             public void run() {
                 Snackbar.make(getView(), "Failed to connect a power switch...", Snackbar.LENGTH_LONG)
                         .show();
+                setSwitchViewEnabled(false);
                 mConnectFab.setEnabled(true);
             }
         });
+    }
+
+    private void initPowerSwitch() {
+        for (int i = 0; i != SWITCH_NUMBER; i++) {
+            String strPower;
+
+            if (null != mPowerSwitchArray[i]) {
+                continue;
+            }
+
+            if (0 == i) {
+                mPowerSwitchArray[i] = (SwitchButton) mMainView.findViewById(R.id.power_switch1);
+                strPower = "power1";
+            } else if (1 == i) {
+                mPowerSwitchArray[i] = (SwitchButton) mMainView.findViewById(R.id.power_switch2);
+                strPower = "power2";
+            } else {
+                /* Fill the rest switch button view up when needed */
+                continue;
+            }
+
+            final String f_strPower = strPower;
+
+            mPowerSwitchArray[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked == true) {
+                        mConnection.sendMessage(f_strPower + " on");
+                    } else {
+                        mConnection.sendMessage(f_strPower +" off");
+                    }
+                }
+            });
+            mPowerSwitchArray[i].setEnabled(false);
+        }
+    }
+
+    private void setSwitchViewEnabled(boolean blEnabled) {
+        for (SwitchButton switchButton: mPowerSwitchArray) {
+            if (null != switchButton) {
+                switchButton.setEnabled(blEnabled);
+            }
+        }
     }
 
     private void showMsg(String strMsg) {

@@ -14,9 +14,9 @@ public class PirEntry {
     public PirEntry() {
     }
 
-    public PirEntry(Long timestamp, String image, Map<String, Float> annotations) {
+    public PirEntry(Long timestamp, String strImgName, Map<String, Float> annotations) {
         this.timestamp = timestamp;
-        this.name = image;
+        this.name = strImgName;
         this.annotations = annotations;
     }
 
